@@ -9,7 +9,6 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-6.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
 
 **NutriScan** is an AI-powered smart nutrition scanner built to instantly analyze **packaged food items** (such as packaged snacks, cereals, canned foods, beverages, chocolates, and packaged grocery items) by scanning their **QR codes** or **1D/2D barcodes**.
 
@@ -93,36 +92,36 @@ flowchart TD
 sequenceDiagram
     autonumber
     actor User
-    participant Frontend as React Frontend (Vite)
+    participant Frontend as React Frontend
     participant Backend as Express REST API
     participant Mongo as MongoDB Cache
-    participant LocalData as indianSnacks.json
+    participant LocalData as Local Snacks DB
     participant OFF as Open Food Facts API
 
     User->>Frontend: Scan Packaged Food QR / Barcode
-    Frontend->>Backend: GET /api/scan/barcode?barcode=PACKAGED_CODE
+    Frontend->>Backend: GET /api/scan/barcode?barcode=XYZ
     
-    Backend->>Mongo: 1. Check MongoDB Cache for Packaged Product
-    alt Cache HIT
-        Mongo-->>Backend: Return Cached Product Document
-    else Cache MISS
-        Backend->>LocalData: 2. Check Local Packaged Snacks Database
-        alt Local HIT
-            LocalData-->>Backend: Return Local Packaged Snack Object
-        else Local MISS
-            Backend->>OFF: 3. Query Open Food Facts Global Database
-            OFF-->>Backend: Return Raw Packaged Food Nutrients
-            Backend->>Mongo: 4. Upsert & Cache Product Document
-        end
-    end
+    Note over Backend,Mongo: Step 1: Check MongoDB Cache
+    Backend->>Mongo: Query product document by barcode
+    Mongo-->>Backend: Return cached product document (if HIT)
 
-    Backend->>Backend: 5. Calculate NutriScore (A–E)
-    Backend->>Backend: 6. Calculate Age-Aware Risk (Child/Adult/Senior)
-    Backend->>Backend: 7. Scan Ingredients for Toxic Additives & Preservatives
-    Backend->>Backend: 8. Compute Healthier Packaged Food Alternatives
+    Note over Backend,LocalData: Step 2: Check Local Database
+    Backend->>LocalData: Fallback query to indianSnacks.json
+    LocalData-->>Backend: Return local product document (if HIT)
 
-    Backend-->>Frontend: Return Analyzed Packaged Product Payload
-    Frontend->>User: Render Dashboard, Warnings, Charts & Swaps
+    Note over Backend,OFF: Step 3: Fetch External API
+    Backend->>OFF: Fetch from Open Food Facts REST API
+    OFF-->>Backend: Return raw food nutritional data
+    Backend->>Mongo: Cache fetched product document in MongoDB
+
+    Note over Backend: Step 4: Run Health Analysis Engines
+    Backend->>Backend: Calculate NutriScore (A to E Grade)
+    Backend->>Backend: Evaluate Age-Aware Health Risk (Child / Adult / Senior)
+    Backend->>Backend: Scan Ingredients for Toxic Additives & Preservatives
+    Backend->>Backend: Generate Healthier Packaged Alternatives
+
+    Backend-->>Frontend: Return analyzed product JSON payload
+    Frontend->>User: Display grade, warnings, charts & swaps
 ```
 
 ---
@@ -275,42 +274,19 @@ npm run dev # Starts Vite server on http://localhost:5173
 
 ## 📜 Repository Documentation & Governance
 
-To maintain open-source transparency, security, and community governance, NutriScan includes all standard GitHub repository documentation:
+To maintain open-source transparency, security, and community governance, NutriScan includes standard repository documentation:
 
 | Document | Description | Link |
 | :--- | :--- | :--- |
 | **📜 License** | MIT Open Source License | [LICENSE](LICENSE) |
-| **🤝 Contributing Guidelines** | How to contribute, commit conventions & PR workflow | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | **📜 Code of Conduct** | Community pledge and standards (Contributor Covenant v2.1) | [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) |
 | **🛡️ Security Policy** | Vulnerability reporting procedure & security practices | [SECURITY.md](SECURITY.md) |
-
----
-
-## 🤝 Contributing
-
-We welcome contributions of all sizes! Whether you are fixing bugs, improving documentation, adding new food database adapters, or enhancing UI design, please refer to our [Contributing Guidelines](CONTRIBUTING.md) before submitting a Pull Request.
-
-1. Fork the Project repository.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your Changes (`git commit -m 'feat: add AmazingFeature'`).
-4. Push to the Branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
 
 ---
 
 ## 🛡️ Security & Privacy
 
 We treat security and user privacy as top priorities. If you discover a vulnerability or security issue, please review our [Security Policy](SECURITY.md) to report it responsibly.
-
----
-
-## ✨ Contributors
-
-Thanks to all the amazing people who have contributed to building NutriScan!
-
-<a href="https://github.com/harshit-kumar-dev/nutriscan/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=harshit-kumar-dev/nutriscan" alt="Contributors" />
-</a>
 
 ---
 
