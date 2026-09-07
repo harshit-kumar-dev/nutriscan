@@ -1,6 +1,6 @@
 # 📦 🥗 NutriScan: Packaged Food QR & Barcode Nutrition Scanner
 
-![NutriScan Packaged Food QR Code Scanner](./frontend/public/health-banner.jpg)
+![NutriScan Packaged Food QR Code Scanner](./frontend/public/health-banner.png)
 
 [![React](https://img.shields.io/badge/React-19.0-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
